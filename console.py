@@ -1,13 +1,12 @@
-#  James D Isaacks, 2018
+#  Pervy Rogues, 2018
 #
-# This walks all directories in a folder looking
-# for Renpy games and enables the game console.
-#
-#
+# This walks all directoriesin a folder,
+# starting from where the file is located,
+# looking for Renpy games and
+# enables the game console.
 #
 
 import fnmatch
-import mmap
 import os
 
 # Starts in directory it is ran from
@@ -18,10 +17,8 @@ numFiles = 0
 for root, subdirs, files in os.walk(rootDir):
     for dir in subdirs:
         for file in files:
+            # Find file 00console.rpy
             if fnmatch.fnmatch(file, '00console.rpy'):
-            # Find file console.rpy with a path check to ensure proper file.
-#            if file == 'console.rpy':
-                print("Found a file.")
                 s = open(os.path.join(root, file)).read()
                 # Check the file first before changing.
                 if s.find('    config.console = False') != -1:
@@ -31,12 +28,14 @@ for root, subdirs, files in os.walk(rootDir):
                     f.close()
                     numFiles += 1
                     print(os.path.join(root, file), " was edited.")
-                    break
                 # File was already edited, do nothing.
                 else:
                     print(os.path.join(root, file), " was already edited.")
+                # Clear this directory so os.walk moves on and break from file loop.
+                subdirs[:] = []
+                break
 
 if numFiles > 0:
-    print(numFiles, " were changed.")
+    print(numFiles, " files were changed.")
 else:
     print("No files were changed.")
